@@ -1,6 +1,7 @@
 package com.liebekinder.mobiledegreasor;
 
 import android.app.Activity;
+<<<<<<< HEAD
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -10,6 +11,14 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.liebekinder.mobiledegreasor.core.CategoryManager;
+=======
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+>>>>>>> menu + debut popup
 
 public class Principale extends Activity {
 
@@ -84,5 +93,40 @@ public class Principale extends Activity {
 
 		return true;
 	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item){
+		CharSequence lal = item.getTitle();
+		Log.i("her","clic method action: " + lal);
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+		// 2. Chain together various setter methods to set the dialog characteristics
+		builder.setMessage("ll")
+		       .setTitle("12314")
+		       .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					Log.v("here", "message à la con");
+				}
+			})
+		       .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					Log.v("here", "message à la con");
+					
+				}
+			});
+
+		// 3. Get the AlertDialog from create()
+		AlertDialog dialog = builder.create();
+		dialog.show();
+		
+		return false;
+	}
+	
 
 }
