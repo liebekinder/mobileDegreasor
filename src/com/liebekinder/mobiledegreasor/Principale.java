@@ -1,7 +1,6 @@
 package com.liebekinder.mobiledegreasor;
 
 import android.app.Activity;
-<<<<<<< HEAD
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -10,15 +9,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.liebekinder.mobiledegreasor.core.CategoryManager;
-=======
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
->>>>>>> menu + debut popup
 
 public class Principale extends Activity {
 
