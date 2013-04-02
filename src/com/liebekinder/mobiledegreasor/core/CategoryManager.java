@@ -3,6 +3,10 @@ package com.liebekinder.mobiledegreasor.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Context;
+
+import com.liebekinder.mobiledegreasor.Principale;
+
 /**
  * Globalcategory manager
  * 
@@ -13,10 +17,12 @@ public class CategoryManager {
 	/**
 	 * List of all category
 	 */
-	private List<Category> categoriesList = new ArrayList<Category>();
+	private List<Category> categoriesList;
+	private Principale principal;
 	
-	public CategoryManager() {
-		
+	public CategoryManager(Principale p) {
+		categoriesList = new ArrayList<Category>();
+		principal = p;
 	}
 	
 	/**
@@ -28,6 +34,9 @@ public class CategoryManager {
 		return categoriesList;
 	}
 	
+	public Context getContext(){
+		return principal;
+	}
 	/**
 	 * Add a new category. If it's name is already present, do nothing and return false.
 	 * 
@@ -36,7 +45,7 @@ public class CategoryManager {
 	 */
 	public boolean addCategory(Category newCat) {
 		for(Category cat : categoriesList) {
-			if(cat.getName().equals(cat.getName())) return false;
+			if(cat.getName().equals(newCat.getName())) return false;
 		}
 		categoriesList.add(newCat);
 		return true;

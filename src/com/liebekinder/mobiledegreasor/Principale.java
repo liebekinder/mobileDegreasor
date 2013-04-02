@@ -1,13 +1,19 @@
 package com.liebekinder.mobiledegreasor;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.View;
-import android.widget.Button;
+import android.view.MenuItem;
 import android.widget.LinearLayout;
-import android.widget.Toast;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.liebekinder.mobiledegreasor.core.Category;
+import com.liebekinder.mobiledegreasor.core.CategoryManager;
+import com.liebekinder.mobiledegreasor.core.Task;
 
 
 public class Principale extends Activity {
@@ -20,37 +26,37 @@ public class Principale extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_principale);
+		
 
 		// //////////////////////////////////////////////////////////////////////////////////
 		// ////////////////////////////Hard coded example////////////////////////////////////
 		// //////////////////////////////////////////////////////////////////////////////////
-		/*CategoryManager categoryManager = new CategoryManager();
+		categoryManager = new CategoryManager(this);
+		
+		Category voiture = new Category("Voiture",categoryManager);
+		voiture.addTask(new Task("Faire vidange",voiture));
+		voiture.addTask(new Task("Ecraser mémé",voiture));
+		voiture.addTask(new Task("Aller à l'enterrement de mémé",voiture));
 
-		Category voiture = new Category("Voiture");
-		voiture.addTask(new Task("Faire vidange"));
-		voiture.addTask(new Task("Ecraser mémé"));
-		voiture.addTask(new Task("Aller à l'enterrement de mémé"));
-
-		Category chasse = new Category("Chasse");
-		voiture.addTask(new Task("Chasser gibier"));
-		voiture.addTask(new Task("Vider gibier"));
-		voiture.addTask(new Task("Manger enfant"));
+		Category chasse = new Category("Chasse",categoryManager);
+		chasse.addTask(new Task("Chasser gibier",chasse));
+		chasse.addTask(new Task("Vider gibier",chasse));
+		chasse.addTask(new Task("Manger enfant",chasse));
 
 		categoryManager.addCategory(voiture);
-		categoryManager.addCategory(chasse);*/
+		categoryManager.addCategory(chasse);
 
 		// //////////////////////////////////////////////////////////////////////////////////
 		// //////////////////////////////////////////////////////////////////////////////////
 		// //////////////////////////////////////////////////////////////////////////////////
 		
 		// TEST//
-		
+		/*
 		Log.i("test", "test2");
 
 
 		
-		LinearLayout linear = (LinearLayout) findViewById(R.id.layout_principal);
+		LinearLayout linear = (LinearLayout) findViewById(R.id.layoutPrincipal);
 		
 		for (int i = 1; i <= 20; i++) {
 			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -70,17 +76,34 @@ public class Principale extends Activity {
 							.show();
 				}
 			});
-		}
+		}*/
 		// TEST//
 
+		setContentView(affiche());
 		
+	}
+	
+	public LinearLayout affiche(){
+		LinearLayout global = new LinearLayout(this);
+		
+		for(Category cat: categoryManager.getCategoriesList()){
+			ListView lv = new ListView(this);
+			TextView tv = new TextView(this);
+			
+			Log.i("categorie: ",cat.getName());
+			
+			tv.setText(cat.getName());
+			lv.addHeaderView(tv);
+			lv.setAdapter(cat);
+			global.addView(lv);
+		}
+		return global;
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.principale, menu);
-
 		return true;
 	}
 	
@@ -91,7 +114,7 @@ public class Principale extends Activity {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
 		// 2. Chain together various setter methods to set the dialog characteristics
-		builder.setMessage("ll")
+		builder.setMessage("loul")
 		       .setTitle("12314")
 		       .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 				
