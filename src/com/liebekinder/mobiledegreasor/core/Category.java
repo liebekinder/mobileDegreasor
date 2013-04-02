@@ -5,14 +5,6 @@ import java.util.List;
 import java.util.UUID;
 
 import android.content.Context;
-import android.database.DataSetObserver;
-import android.util.TypedValue;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.TextView;
 
 /**
  * A category. Must be unique by it's name.
@@ -21,7 +13,7 @@ import android.widget.TextView;
  * @author Ornicare
  *
  */
-public class Category implements ListAdapter{
+public class Category{
 
 	/**
 	 * Category's name
@@ -89,78 +81,6 @@ public class Category implements ListAdapter{
 
 	public void setUnwrapped(boolean unwrapped) {
 		this.unwrapped = unwrapped;
-	}
-
-	@Override
-	public int getCount() {
-		return tasksList.size();
-	}
-
-	@Override
-	public Object getItem(int arg0) {
-		return tasksList.get(arg0);
-	}
-
-	@Override
-	public long getItemId(int arg0) {
-		return 0;
-	}
-
-	@Override
-	public int getItemViewType(int arg0) {
-		return 0;
-	}
-
-	@Override
-	public View getView(int arg0, View arg1, ViewGroup arg2) {
-		LinearLayout linear = new LinearLayout(getContext());
-		linear.setOrientation(LinearLayout.HORIZONTAL);
-		
-			TextView tv = new TextView(getContext());
-			tv.setText(((Task)getItem(arg0)).getName());
-			tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP,20);
-			
-			CheckBox cb = new CheckBox(getContext());
-			cb.setChecked(((Task)getItem(arg0)).isChecked());
-			
-
-			linear.addView(cb);
-			linear.addView(tv);
-		
-		return linear;
-	}
-
-	@Override
-	public int getViewTypeCount() {
-		return 1;
-	}
-
-	@Override
-	public boolean hasStableIds() {
-		return true;
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return tasksList.isEmpty();
-	}
-
-	@Override
-	public void registerDataSetObserver(DataSetObserver arg0) {
-	}
-
-	@Override
-	public void unregisterDataSetObserver(DataSetObserver arg0) {
-	}
-
-	@Override
-	public boolean areAllItemsEnabled() {
-		return true;
-	}
-
-	@Override
-	public boolean isEnabled(int arg0) {
-		return true;
 	}
 
 	public Context getContext() {

@@ -10,9 +10,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.liebekinder.mobiledegreasor.core.Category;
@@ -41,6 +40,7 @@ public class Principale extends Activity {
 		CategoryManager categoryManager2 = new CategoryManager(this);
 
 		Category voiture = new Category("Voiture", categoryManager2);
+		
 		voiture.addTask(new Task("Faire vidange", voiture));
 		voiture.addTask(new Task("Ecraser mémé", voiture));
 		voiture.addTask(new Task("Aller à l'enterrement de mémé", voiture));
@@ -49,36 +49,15 @@ public class Principale extends Activity {
 		chasse.addTask(new Task("Chasser gibier", chasse));
 		chasse.addTask(new Task("Vider gibier", chasse));
 		chasse.addTask(new Task("Manger enfant", chasse));
+		Category chasse2 = new Category("Chasse2",categoryManager2);
+		chasse2.addTask(new Task("Chassers gibier",chasse2));
+		chasse2.addTask(new Task("Viders gibier",chasse2));
+		chasse2.addTask(new Task("Mangers enfant",chasse2));
 
 		categoryManager2.addCategory(voiture);
 		categoryManager2.addCategory(chasse);
+		categoryManager2.addCategory(chasse2);
 
-		// //////////////////////////////////////////////////////////////////////////////////
-		// //////////////////////////////////////////////////////////////////////////////////
-		// //////////////////////////////////////////////////////////////////////////////////
-
-		// TEST//
-		/*
-		 * Log.i("test", "test2");
-		 * 
-		 * 
-		 * 
-		 * LinearLayout linear = (LinearLayout)
-		 * findViewById(R.id.layoutPrincipal);
-		 * 
-		 * for (int i = 1; i <= 20; i++) { LinearLayout.LayoutParams params =
-		 * new LinearLayout.LayoutParams(
-		 * LinearLayout.LayoutParams.MATCH_PARENT,
-		 * LinearLayout.LayoutParams.WRAP_CONTENT); Button btn = new
-		 * Button(this); btn.setId(i); final int id_ = btn.getId();
-		 * btn.setText("button " + id_); //btn.setBackgroundColor(Color.rgb(70,
-		 * 80, 90)); linear.addView(btn, params); Button btn1 = ((Button)
-		 * findViewById(id_)); btn1.setOnClickListener(new
-		 * View.OnClickListener() { public void onClick(View view) {
-		 * Toast.makeText(view.getContext(), "Button clicked index = " + id_,
-		 * Toast.LENGTH_SHORT) .show(); } }); }
-		 */
-		// TEST//
 
 		restoreState();
 
@@ -117,18 +96,11 @@ public class Principale extends Activity {
 
 	public LinearLayout affiche() {
 		LinearLayout global = new LinearLayout(this);
-
-		for (Category cat : categoryManager.getCategoriesList()) {
-			ListView lv = new ListView(this);
-			TextView tv = new TextView(this);
-
-			Log.i("categorie: ", cat.getName());
-
-			tv.setText(cat.getName());
-			lv.addHeaderView(tv);
-			lv.setAdapter(cat);
-			global.addView(lv);
-		}
+		
+		ExpandableListView lv = new ExpandableListView(this);
+		lv.setAdapter(categoryManager);
+		global.addView(lv);
+		
 		return global;
 	}
 
@@ -184,6 +156,10 @@ public class Principale extends Activity {
 				else {
 					message = "Category \""+name+"\" successfully created !";
 					if(!categoryManager.addCategory(new Category(name, categoryManager))) message = "Category \""+name+"\" already exists !";
+					else{
+						//saveState();
+						//affiche();						
+					}
 				}
 				Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 			}
