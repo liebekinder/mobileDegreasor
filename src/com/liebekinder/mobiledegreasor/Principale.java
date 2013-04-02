@@ -1,5 +1,7 @@
 package com.liebekinder.mobiledegreasor;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -10,9 +12,18 @@ import android.text.Editable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.BaseExpandableListAdapter;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
+import android.widget.ExpandableListView.OnGroupClickListener;
+import android.widget.ExpandableListView.OnGroupCollapseListener;
+import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -30,6 +41,8 @@ public class Principale extends Activity {
 	private ListAdapter listadapter;
 	private SharedPreferences shared = null;
 	private Principale context;
+	private MyExpandableListAdapter adapter;
+	private ExpandableListView list;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -71,11 +84,62 @@ public class Principale extends Activity {
 			categoryManager = categoryManager2;
 		Log.i("test2", categoryManager.getCategoriesList().get(0).getName());
 		// FIN TEST//
-
-		listadapter = new ListAdapter(categoryManager.getCategoriesList(), this);
-		setContentView(affiche());
 		
+		list = new ExpandableListView(this);
+		list.setGroupIndicator(null);
+        list.setChildIndicator(null);
+        adapter = new MyExpandableListAdapter(this, (ArrayList<Category>) categoryManager.getCategoriesList());
+        list.setAdapter(adapter);
+        
+        list.setOnGroupClickListener(new OnGroupClickListener(){
 
+			@Override
+			public boolean onGroupClick(ExpandableListView arg0, View arg1,
+					int groupPosition, long arg3) {
+				Toast.makeText(context, "Clik on : "+categoryManager.getCategoriesList().get(groupPosition).getName(), Toast.LENGTH_LONG).show();
+				return false;
+			}
+
+        });
+        
+        list.setOnChildClickListener(new OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView expandablelistview,
+                    View clickedView, int groupPosition, int childPosition, long childId) {
+            	Toast.makeText(context, "Clik on : "+categoryManager.getCategoriesList().get(groupPosition).getTasksList().get(childPosition).getName(), Toast.LENGTH_LONG).show();
+                return false;
+            }
+        });
+        
+        list.setOnGroupCollapseListener(new OnGroupCollapseListener() {
+			
+			@Override
+			public void onGroupCollapse(int groupPosition) {
+				categoryManager.getCategoriesList().get(groupPosition).setUnwrapped(false);
+			}
+		});
+        
+        list.setOnGroupExpandListener(new OnGroupExpandListener() {
+			
+			@Override
+			public void onGroupExpand(int groupPosition) {
+				categoryManager.getCategoriesList().get(groupPosition).setUnwrapped(true);
+			}
+		});
+        
+
+        list.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView,
+                    View view, int position, long id) {
+            	Toast.makeText(context, "Long clic", Toast.LENGTH_LONG).show();
+                return true;
+            }
+
+        });
+        
+        setContentView(list);
 	}
 
 	public void saveState() {
@@ -122,26 +186,6 @@ public class Principale extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		CharSequence lal = item.getTitle();
 		Log.i("her", "clic method action: " + lal);
-		/*
-		 * AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		 * 
-		 * // 2. Chain together various setter methods to set the dialog
-		 * characteristics builder.setMessage("loul") .setTitle("12314")
-		 * .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-		 * 
-		 * @Override public void onClick(DialogInterface dialog, int which) { //
-		 * TODO Auto-generated method stub Log.v("here", "message à la con"); }
-		 * }) .setNegativeButton("Cancel", new DialogInterface.OnClickListener()
-		 * {
-		 * 
-		 * @Override public void onClick(DialogInterface dialog, int which) { //
-		 * TODO Auto-generated method stub Log.v("here", "message à la con");
-		 * 
-		 * } });
-		 * 
-		 * // 3. Get the AlertDialog from create() AlertDialog dialog =
-		 * builder.create(); dialog.show();
-		 */
 
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
@@ -165,8 +209,7 @@ public class Principale extends Activity {
 					if(!categoryManager.addCategory(new Category(name, categoryManager))) message = "Category \""+name+"\" already exists !";
 					else{						
 						saveState();
-						((BaseExpandableListAdapter) listadapter).notifyDataSetChanged();
-						affiche();						
+						adapter.notifyDataSetChanged();					
 					}
 				}
 				Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
@@ -185,4 +228,5 @@ public class Principale extends Activity {
 		return false;
 	}
 
+	
 }
