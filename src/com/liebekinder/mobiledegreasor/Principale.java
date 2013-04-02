@@ -5,10 +5,12 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.BaseExpandableListAdapter;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
@@ -16,6 +18,7 @@ import android.widget.Toast;
 
 import com.liebekinder.mobiledegreasor.core.Category;
 import com.liebekinder.mobiledegreasor.core.CategoryManager;
+import com.liebekinder.mobiledegreasor.core.ListAdapter;
 import com.liebekinder.mobiledegreasor.core.Task;
 
 public class Principale extends Activity {
@@ -24,12 +27,14 @@ public class Principale extends Activity {
 	 * The global category manager. Restore it.
 	 */
 	private CategoryManager categoryManager;
+	private ListAdapter listadapter;
 	private SharedPreferences shared = null;
 	private Principale context;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		shared = PreferenceManager.getDefaultSharedPreferences(this);
 		
 		this.context = this;
 
@@ -67,7 +72,9 @@ public class Principale extends Activity {
 		Log.i("test2", categoryManager.getCategoriesList().get(0).getName());
 		// FIN TEST//
 
+		listadapter = new ListAdapter(categoryManager.getCategoriesList(), this);
 		setContentView(affiche());
+		
 
 	}
 
@@ -98,7 +105,7 @@ public class Principale extends Activity {
 		LinearLayout global = new LinearLayout(this);
 		
 		ExpandableListView lv = new ExpandableListView(this);
-		lv.setAdapter(categoryManager);
+		lv.setAdapter(listadapter);
 		global.addView(lv);
 		
 		return global;
@@ -156,9 +163,10 @@ public class Principale extends Activity {
 				else {
 					message = "Category \""+name+"\" successfully created !";
 					if(!categoryManager.addCategory(new Category(name, categoryManager))) message = "Category \""+name+"\" already exists !";
-					else{
-						//saveState();
-						//affiche();						
+					else{						
+						saveState();
+						((BaseExpandableListAdapter) listadapter).notifyDataSetChanged();
+						affiche();						
 					}
 				}
 				Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
