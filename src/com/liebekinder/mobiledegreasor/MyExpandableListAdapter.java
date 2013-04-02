@@ -3,17 +3,26 @@ package com.liebekinder.mobiledegreasor;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.TypedValue;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
+import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.ExpandableListView;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.liebekinder.mobiledegreasor.core.Category;
+import com.liebekinder.mobiledegreasor.core.MyOnCheckedChangeListener;
 import com.liebekinder.mobiledegreasor.core.Task;
 
 public class MyExpandableListAdapter extends BaseExpandableListAdapter {
@@ -55,24 +64,28 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
 		LinearLayout linear = new LinearLayout(mContext);
 		linear.setOrientation(LinearLayout.HORIZONTAL);
 		
-			TextView tv = new TextView(mContext);
-			tv.setText(((Task)getChild(groupPosition, childPosition)).getName());
-			tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP,20);
-			
-			CheckBox cb = new CheckBox(mContext);
-			cb.setChecked(((Task)getChild(groupPosition, childPosition)).isChecked());
-			
+		TextView tv = new TextView(mContext);
+		tv.setText(((Task)getChild(groupPosition, childPosition)).getName());
+		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP,20);
+		
+		CheckBox cb = new CheckBox(mContext);
+		cb.setChecked(((Task)getChild(groupPosition, childPosition)).isChecked());
+		
 
-			linear.addView(cb);
-			linear.addView(tv);
+		linear.addView(cb);
+		linear.addView(tv);
+		
+		linear.setOnClickListener(new OnClickListener() {
 			
-			linear.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View arg0) {
-					Toast.makeText(mContext, "Child !", Toast.LENGTH_LONG).show();
-				}
-			});
+			@Override
+			public void onClick(View arg0) {
+				Toast.makeText(mContext, "Child !", Toast.LENGTH_LONG).show();
+			}
+		});
+		
+		
+		cb.setChecked(list.get(groupPosition).getTasksList().get(childPosition).isChecked());
+		cb.setOnCheckedChangeListener(new MyOnCheckedChangeListener(mContext, list.get(groupPosition).getTasksList().get(childPosition)));
 		
 		return linear;
 	}
@@ -117,12 +130,12 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
 	
 	@Override
 	public View getGroupView(int groupPosition, boolean isExpanded,
-			View convertView, ViewGroup parent) {
-		
-			TextView tv = new TextView(mContext);
-			tv.setText(((Category)getGroup(groupPosition)).getName()+(((Category)getGroup(groupPosition)).isUnwrapped()?"-":"+"));
-			tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP,30);
-		
+		View convertView, ViewGroup parent) {
+	
+		TextView tv = new TextView(mContext);
+		tv.setText(((Category)getGroup(groupPosition)).getName()+(((Category)getGroup(groupPosition)).isUnwrapped()?"-":"+"));
+		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP,30);
+			
 		return tv;
 	}
 

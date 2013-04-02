@@ -10,13 +10,12 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
@@ -48,7 +47,7 @@ public class Principale extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		shared = PreferenceManager.getDefaultSharedPreferences(this);
-		
+
 		this.context = this;
 
 		// //////////////////////////////////////////////////////////////////////////////////
@@ -58,7 +57,7 @@ public class Principale extends Activity {
 		CategoryManager categoryManager2 = new CategoryManager(this);
 
 		Category voiture = new Category("Voiture", categoryManager2);
-		
+
 		voiture.addTask(new Task("Faire vidange", voiture));
 		voiture.addTask(new Task("Ecraser mémé", voiture));
 		voiture.addTask(new Task("Aller à l'enterrement de mémé", voiture));
@@ -67,15 +66,14 @@ public class Principale extends Activity {
 		chasse.addTask(new Task("Chasser gibier", chasse));
 		chasse.addTask(new Task("Vider gibier", chasse));
 		chasse.addTask(new Task("Manger enfant", chasse));
-		Category chasse2 = new Category("Chasse2",categoryManager2);
-		chasse2.addTask(new Task("Chassers gibier",chasse2));
-		chasse2.addTask(new Task("Viders gibier",chasse2));
-		chasse2.addTask(new Task("Mangers enfant",chasse2));
+		Category chasse2 = new Category("Chasse2", categoryManager2);
+		chasse2.addTask(new Task("Chassers gibier", chasse2));
+		chasse2.addTask(new Task("Viders gibier", chasse2));
+		chasse2.addTask(new Task("Mangers enfant", chasse2));
 
 		categoryManager2.addCategory(voiture);
 		categoryManager2.addCategory(chasse);
 		categoryManager2.addCategory(chasse2);
-
 
 		restoreState();
 
@@ -84,62 +82,100 @@ public class Principale extends Activity {
 			categoryManager = categoryManager2;
 		Log.i("test2", categoryManager.getCategoriesList().get(0).getName());
 		// FIN TEST//
-		
+
 		list = new ExpandableListView(this);
 		list.setGroupIndicator(null);
-        list.setChildIndicator(null);
-        adapter = new MyExpandableListAdapter(this, (ArrayList<Category>) categoryManager.getCategoriesList());
-        list.setAdapter(adapter);
-        
-        list.setOnGroupClickListener(new OnGroupClickListener(){
+		list.setChildIndicator(null);
+		adapter = new MyExpandableListAdapter(this,
+				(ArrayList<Category>) categoryManager.getCategoriesList());
+		list.setAdapter(adapter);
+
+		list.setOnGroupClickListener(new OnGroupClickListener() {
 
 			@Override
 			public boolean onGroupClick(ExpandableListView arg0, View arg1,
 					int groupPosition, long arg3) {
-				Toast.makeText(context, "Clik on : "+categoryManager.getCategoriesList().get(groupPosition).getName(), Toast.LENGTH_LONG).show();
+				Toast.makeText(
+						context,
+						"Clik on : "
+								+ categoryManager.getCategoriesList()
+										.get(groupPosition).getName(),
+						Toast.LENGTH_LONG).show();
 				return false;
 			}
 
-        });
-        
-        list.setOnChildClickListener(new OnChildClickListener() {
-            @Override
-            public boolean onChildClick(ExpandableListView expandablelistview,
-                    View clickedView, int groupPosition, int childPosition, long childId) {
-            	Toast.makeText(context, "Clik on : "+categoryManager.getCategoriesList().get(groupPosition).getTasksList().get(childPosition).getName(), Toast.LENGTH_LONG).show();
-                return false;
-            }
-        });
-        
-        list.setOnGroupCollapseListener(new OnGroupCollapseListener() {
-			
+		});
+
+		list.setOnChildClickListener(new OnChildClickListener() {
+			@Override
+			public boolean onChildClick(ExpandableListView expandablelistview,
+					View clickedView, int groupPosition, int childPosition,
+					long childId) {
+				Toast.makeText(
+						context,
+						"Clik on : "
+								+ categoryManager.getCategoriesList()
+										.get(groupPosition).getTasksList()
+										.get(childPosition).getName(),
+						Toast.LENGTH_LONG).show();
+				return false;
+			}
+		});
+
+		list.setOnGroupCollapseListener(new OnGroupCollapseListener() {
+
 			@Override
 			public void onGroupCollapse(int groupPosition) {
-				categoryManager.getCategoriesList().get(groupPosition).setUnwrapped(false);
+				categoryManager.getCategoriesList().get(groupPosition)
+						.setUnwrapped(false);
+				saveState();
 			}
 		});
-        
-        list.setOnGroupExpandListener(new OnGroupExpandListener() {
-			
+
+		list.setOnGroupExpandListener(new OnGroupExpandListener() {
+
 			@Override
 			public void onGroupExpand(int groupPosition) {
-				categoryManager.getCategoriesList().get(groupPosition).setUnwrapped(true);
+				categoryManager.getCategoriesList().get(groupPosition)
+						.setUnwrapped(true);
+				saveState();
 			}
 		});
-        
 
-        list.setOnItemLongClickListener(new OnItemLongClickListener() {
+		list.setOnItemLongClickListener(new OnItemLongClickListener() {
 
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView,
-                    View view, int position, long id) {
-            	Toast.makeText(context, "Long clic", Toast.LENGTH_LONG).show();
-                return true;
-            }
+			@Override
+			public boolean onItemLongClick(AdapterView<?> adapterView,
+					View view, int position, long id) {
+				Toast.makeText(context, "Long clic", Toast.LENGTH_LONG).show();
+				return true;
+			}
 
-        });
-        
-        setContentView(list);
+		});
+
+		for (int i = 0; i < categoryManager.getCategoriesList().size(); i++) {
+			if (categoryManager.getCategoriesList().get(i).isUnwrapped())
+				list.expandGroup(i);
+		}
+
+		registerForContextMenu(list);
+		
+		
+		setContentView(list);
+	}
+	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+	    ContextMenuInfo menuInfo) {
+	    menu.setHeaderTitle("osef");
+	      menu.add(Menu.NONE, 0, 0, "Test");
+
+	 }
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+	  Log.i("sdds",item.toString());
+	  return true;
 	}
 
 	public void saveState() {
@@ -167,11 +203,11 @@ public class Principale extends Activity {
 
 	public LinearLayout affiche() {
 		LinearLayout global = new LinearLayout(this);
-		
+
 		ExpandableListView lv = new ExpandableListView(this);
 		lv.setAdapter(listadapter);
 		global.addView(lv);
-		
+
 		return global;
 	}
 
@@ -201,15 +237,17 @@ public class Principale extends Activity {
 				Editable value = input.getText();
 				String name = value.toString().replace("\n", "").trim();
 				String message;
-				if(name.equals("")) {
+				if (name.equals("")) {
 					message = "Category name cannot be null !";
-				}
-				else {
-					message = "Category \""+name+"\" successfully created !";
-					if(!categoryManager.addCategory(new Category(name, categoryManager))) message = "Category \""+name+"\" already exists !";
-					else{						
+				} else {
+					message = "Category \"" + name
+							+ "\" successfully created !";
+					if (!categoryManager.addCategory(new Category(name,
+							categoryManager)))
+						message = "Category \"" + name + "\" already exists !";
+					else {
 						saveState();
-						adapter.notifyDataSetChanged();					
+						adapter.notifyDataSetChanged();
 					}
 				}
 				Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
@@ -228,5 +266,6 @@ public class Principale extends Activity {
 		return false;
 	}
 
-	
+
+
 }

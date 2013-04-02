@@ -69,13 +69,14 @@ public class Task {
 	}
 	
 	public String serialize() {
-		return name+"\n"+uuid.toString()+"\n\n";
+		return name+"\n"+uuid.toString()+"\n"+checked+"\n\n";
 	}
 	
 	public void deserialize(String s) {
 		String[] taskS = s.split("\n");
 		name = taskS[0];
 		uuid = UUID.fromString(taskS[1]);
+		checked = Boolean.parseBoolean(taskS[2]);
 	}
 
 	
