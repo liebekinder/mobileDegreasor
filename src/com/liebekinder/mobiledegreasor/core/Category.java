@@ -167,5 +167,24 @@ public class Category implements ListAdapter{
 		return parent.getContext();
 	}
 	
+	public String serialize() {
+		String output = name+"\n"+unwrapped+"\n\n";
+		for(Task task : tasksList) {
+			output+=task.serialize();
+		}
+		return output.trim();
+	}
+	
+	public void deserialize(String s) {
+		String[] catS = s.split("\n\n");
+		String[] catSSplit = catS[0].split("\n");
+		name = catSSplit[0];
+		unwrapped = Boolean.valueOf(catSSplit[1]);
+		for(int i =1; i< catS.length;i++){
+			Task task = new Task("",this);
+			task.deserialize(catS[i]);
+			addTask(task);
+		}
+	}
 	
 }

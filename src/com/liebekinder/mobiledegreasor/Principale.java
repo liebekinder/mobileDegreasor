@@ -3,18 +3,21 @@ package com.liebekinder.mobiledegreasor;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.liebekinder.mobiledegreasor.core.Category;
 import com.liebekinder.mobiledegreasor.core.CategoryManager;
 import com.liebekinder.mobiledegreasor.core.Task;
-
 
 public class Principale extends Activity {
 
@@ -22,76 +25,105 @@ public class Principale extends Activity {
 	 * The global category manager. Restore it.
 	 */
 	private CategoryManager categoryManager;
+	private SharedPreferences shared = null;
+	private Principale context;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		this.context = this;
 
 		// //////////////////////////////////////////////////////////////////////////////////
-		// ////////////////////////////Hard coded example////////////////////////////////////
+		// ////////////////////////////Hard coded
+		// example////////////////////////////////////
 		// //////////////////////////////////////////////////////////////////////////////////
-		categoryManager = new CategoryManager(this);
-		
-		Category voiture = new Category("Voiture",categoryManager);
-		voiture.addTask(new Task("Faire vidange",voiture));
-		voiture.addTask(new Task("Ecraser mémé",voiture));
-		voiture.addTask(new Task("Aller à l'enterrement de mémé",voiture));
+		CategoryManager categoryManager2 = new CategoryManager(this);
 
-		Category chasse = new Category("Chasse",categoryManager);
-		chasse.addTask(new Task("Chasser gibier",chasse));
-		chasse.addTask(new Task("Vider gibier",chasse));
-		chasse.addTask(new Task("Manger enfant",chasse));
+		Category voiture = new Category("Voiture", categoryManager2);
+		voiture.addTask(new Task("Faire vidange", voiture));
+		voiture.addTask(new Task("Ecraser mémé", voiture));
+		voiture.addTask(new Task("Aller à l'enterrement de mémé", voiture));
 
-		categoryManager.addCategory(voiture);
-		categoryManager.addCategory(chasse);
+		Category chasse = new Category("Chasse", categoryManager2);
+		chasse.addTask(new Task("Chasser gibier", chasse));
+		chasse.addTask(new Task("Vider gibier", chasse));
+		chasse.addTask(new Task("Manger enfant", chasse));
+
+		categoryManager2.addCategory(voiture);
+		categoryManager2.addCategory(chasse);
 
 		// //////////////////////////////////////////////////////////////////////////////////
 		// //////////////////////////////////////////////////////////////////////////////////
 		// //////////////////////////////////////////////////////////////////////////////////
-		
+
 		// TEST//
 		/*
-		Log.i("test", "test2");
-
-
-		
-		LinearLayout linear = (LinearLayout) findViewById(R.id.layoutPrincipal);
-		
-		for (int i = 1; i <= 20; i++) {
-			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-					LinearLayout.LayoutParams.MATCH_PARENT,
-					LinearLayout.LayoutParams.WRAP_CONTENT);
-			Button btn = new Button(this);
-			btn.setId(i);
-			final int id_ = btn.getId();
-			btn.setText("button " + id_);
-			//btn.setBackgroundColor(Color.rgb(70, 80, 90));
-			linear.addView(btn, params);
-			Button btn1 = ((Button) findViewById(id_));
-			btn1.setOnClickListener(new View.OnClickListener() {
-				public void onClick(View view) {
-					Toast.makeText(view.getContext(),
-							"Button clicked index = " + id_, Toast.LENGTH_SHORT)
-							.show();
-				}
-			});
-		}*/
+		 * Log.i("test", "test2");
+		 * 
+		 * 
+		 * 
+		 * LinearLayout linear = (LinearLayout)
+		 * findViewById(R.id.layoutPrincipal);
+		 * 
+		 * for (int i = 1; i <= 20; i++) { LinearLayout.LayoutParams params =
+		 * new LinearLayout.LayoutParams(
+		 * LinearLayout.LayoutParams.MATCH_PARENT,
+		 * LinearLayout.LayoutParams.WRAP_CONTENT); Button btn = new
+		 * Button(this); btn.setId(i); final int id_ = btn.getId();
+		 * btn.setText("button " + id_); //btn.setBackgroundColor(Color.rgb(70,
+		 * 80, 90)); linear.addView(btn, params); Button btn1 = ((Button)
+		 * findViewById(id_)); btn1.setOnClickListener(new
+		 * View.OnClickListener() { public void onClick(View view) {
+		 * Toast.makeText(view.getContext(), "Button clicked index = " + id_,
+		 * Toast.LENGTH_SHORT) .show(); } }); }
+		 */
 		// TEST//
 
+		restoreState();
+
+		// TEST : si pas demodèle, en mettre un //
+		if (categoryManager.getCategoriesList().isEmpty())
+			categoryManager = categoryManager2;
+		Log.i("test2", categoryManager.getCategoriesList().get(0).getName());
+		// FIN TEST//
+
 		setContentView(affiche());
-		
+
 	}
-	
-	public LinearLayout affiche(){
+
+	public void saveState() {
+		SharedPreferences.Editor editor = null;
+		editor = shared.edit();
+		try {
+			editor.putString("main", categoryManager.serialize());
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		editor.commit();
+	}
+
+	public void restoreState() {
+		String s = null;
+		try {
+			s = shared.getString("main", null);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		categoryManager = new CategoryManager(this);
+		if (s != null)
+			categoryManager.deserialize(s);
+	}
+
+	public LinearLayout affiche() {
 		LinearLayout global = new LinearLayout(this);
-		
-		for(Category cat: categoryManager.getCategoriesList()){
+
+		for (Category cat : categoryManager.getCategoriesList()) {
 			ListView lv = new ListView(this);
 			TextView tv = new TextView(this);
-			
-			Log.i("categorie: ",cat.getName());
-			
+
+			Log.i("categorie: ", cat.getName());
+
 			tv.setText(cat.getName());
 			lv.addHeaderView(tv);
 			lv.setAdapter(cat);
@@ -106,40 +138,67 @@ public class Principale extends Activity {
 		getMenuInflater().inflate(R.menu.principale, menu);
 		return true;
 	}
-	
+
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item){
+	public boolean onOptionsItemSelected(MenuItem item) {
 		CharSequence lal = item.getTitle();
-		Log.i("her","clic method action: " + lal);
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		Log.i("her", "clic method action: " + lal);
+		/*
+		 * AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		 * 
+		 * // 2. Chain together various setter methods to set the dialog
+		 * characteristics builder.setMessage("loul") .setTitle("12314")
+		 * .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+		 * 
+		 * @Override public void onClick(DialogInterface dialog, int which) { //
+		 * TODO Auto-generated method stub Log.v("here", "message à la con"); }
+		 * }) .setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+		 * {
+		 * 
+		 * @Override public void onClick(DialogInterface dialog, int which) { //
+		 * TODO Auto-generated method stub Log.v("here", "message à la con");
+		 * 
+		 * } });
+		 * 
+		 * // 3. Get the AlertDialog from create() AlertDialog dialog =
+		 * builder.create(); dialog.show();
+		 */
 
-		// 2. Chain together various setter methods to set the dialog characteristics
-		builder.setMessage("loul")
-		       .setTitle("12314")
-		       .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-				
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					// TODO Auto-generated method stub
-					Log.v("here", "message à la con");
-				}
-			})
-		       .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-				
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					// TODO Auto-generated method stub
-					Log.v("here", "message à la con");
-					
-				}
-			});
+		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
-		// 3. Get the AlertDialog from create()
-		AlertDialog dialog = builder.create();
-		dialog.show();
-		
+		alert.setTitle("Create a new category");
+		alert.setMessage("Enter your category name : ");
+
+		// Set an EditText view to get user input
+		final EditText input = new EditText(this);
+		alert.setView(input);
+
+		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				Editable value = input.getText();
+				String name = value.toString().replace("\n", "").trim();
+				String message;
+				if(name.equals("")) {
+					message = "Category name cannot be null !";
+				}
+				else {
+					message = "Category \""+name+"\" successfully created !";
+					if(!categoryManager.addCategory(new Category(name, categoryManager))) message = "Category \""+name+"\" already exists !";
+				}
+				Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+			}
+		});
+
+		alert.setNegativeButton("Cancel",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						// Canceled.
+					}
+				});
+
+		alert.show();
+
 		return false;
 	}
-	
 
 }

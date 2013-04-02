@@ -65,4 +65,20 @@ public class CategoryManager {
 		}
 		return false;
 	}
+	
+	public String serialize() {
+		String output = "";
+		for(Category cat : categoriesList) {
+			output+="\n\n\n"+cat.serialize();
+		}
+		return output.trim();
+	}
+	
+	public void deserialize(String s) {
+		for(String catS : s.split("\n\n\n")) {
+			Category cat = new Category("",this);
+			cat.deserialize(catS);
+			addCategory(cat);
+		}
+	}
 }

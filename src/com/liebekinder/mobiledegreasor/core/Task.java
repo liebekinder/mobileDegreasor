@@ -67,6 +67,16 @@ public class Task {
 	public void setChecked(boolean checked) {
 		this.checked = checked;
 	}
+	
+	public String serialize() {
+		return name+"\n"+uuid.toString()+"\n\n";
+	}
+	
+	public void deserialize(String s) {
+		String[] taskS = s.split("\n");
+		name = taskS[0];
+		uuid = UUID.fromString(taskS[1]);
+	}
 
 	
 }
