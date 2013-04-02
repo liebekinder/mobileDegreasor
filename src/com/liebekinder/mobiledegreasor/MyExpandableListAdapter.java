@@ -133,8 +133,9 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
 		View convertView, ViewGroup parent) {
 	
 		TextView tv = new TextView(mContext);
-		tv.setText(((Category)getGroup(groupPosition)).getName()+(((Category)getGroup(groupPosition)).isUnwrapped()?"-":"+"));
+		tv.setText(((Category)getGroup(groupPosition)).getName());
 		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP,30);
+		tv.setPadding(60, 0, 0, 0);
 			
 		return tv;
 	}

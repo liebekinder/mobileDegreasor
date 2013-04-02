@@ -84,7 +84,7 @@ public class Principale extends Activity {
 		// FIN TEST//
 
 		list = new ExpandableListView(this);
-		list.setGroupIndicator(null);
+		//list.setGroupIndicator(null);
 		list.setChildIndicator(null);
 		adapter = new MyExpandableListAdapter(this,
 				(ArrayList<Category>) categoryManager.getCategoriesList());
