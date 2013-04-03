@@ -15,20 +15,17 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
-import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ExpandableListView.OnGroupCollapseListener;
 import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.Toast;
 
 import com.liebekinder.mobiledegreasor.core.Category;
 import com.liebekinder.mobiledegreasor.core.CategoryManager;
-import com.liebekinder.mobiledegreasor.core.ListAdapter;
 import com.liebekinder.mobiledegreasor.core.Task;
 
 public class Principale extends Activity {
@@ -75,6 +72,10 @@ public class Principale extends Activity {
 		categoryManager2.addCategory(chasse);
 		categoryManager2.addCategory(chasse2);
 
+		//TODO si bug : incompatibilité des données.
+		//categoryManager=categoryManager2;
+		//saveState();
+		
 		restoreState();
 
 		// TEST : si pas demodèle, en mettre un //
@@ -106,21 +107,6 @@ public class Principale extends Activity {
 
 		});
 
-		list.setOnChildClickListener(new OnChildClickListener() {
-			@Override
-			public boolean onChildClick(ExpandableListView expandablelistview,
-					View clickedView, int groupPosition, int childPosition,
-					long childId) {
-				Toast.makeText(
-						context,
-						"Clik on : "
-								+ categoryManager.getCategoriesList()
-										.get(groupPosition).getTasksList()
-										.get(childPosition).getName(),
-						Toast.LENGTH_LONG).show();
-				return false;
-			}
-		});
 
 		list.setOnGroupCollapseListener(new OnGroupCollapseListener() {
 
@@ -168,8 +154,18 @@ public class Principale extends Activity {
 	public void onCreateContextMenu(ContextMenu menu, View v,
 	    ContextMenuInfo menuInfo) {
 	    menu.setHeaderTitle("osef");
-	      menu.add(Menu.NONE, 0, 0, "Test");
-
+	    menu.add(Menu.NONE, 0, 0, "Test");
+	    
+	    
+	    /*try {
+	        info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+	    } catch (ClassCastException e) {
+	        Log.e("error", "bad menuInfo", e);
+	        return;
+	    }
+	    
+	    String selectedTask = ((Child) info.targetView).getTask().getName();
+	    menu.add(Menu.NONE, 1, 1, selectedTask);*/
 	 }
 	
 	@Override
@@ -265,6 +261,7 @@ public class Principale extends Activity {
 
 		return false;
 	}
+
 
 
 

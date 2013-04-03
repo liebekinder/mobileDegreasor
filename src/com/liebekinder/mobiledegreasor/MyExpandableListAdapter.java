@@ -2,6 +2,7 @@ package com.liebekinder.mobiledegreasor;
 
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.util.TypedValue;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.liebekinder.mobiledegreasor.core.Category;
+import com.liebekinder.mobiledegreasor.core.Child;
 import com.liebekinder.mobiledegreasor.core.MyOnCheckedChangeListener;
 import com.liebekinder.mobiledegreasor.core.Task;
 
@@ -61,33 +63,8 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
 	public View getChildView(int groupPosition, int childPosition,
 			boolean isLastChild, View convertView, ViewGroup parent) {
 
-		LinearLayout linear = new LinearLayout(mContext);
-		linear.setOrientation(LinearLayout.HORIZONTAL);
 		
-		TextView tv = new TextView(mContext);
-		tv.setText(((Task)getChild(groupPosition, childPosition)).getName());
-		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP,20);
-		
-		CheckBox cb = new CheckBox(mContext);
-		cb.setChecked(((Task)getChild(groupPosition, childPosition)).isChecked());
-		
-
-		linear.addView(cb);
-		linear.addView(tv);
-		
-		linear.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View arg0) {
-				Toast.makeText(mContext, "Child !", Toast.LENGTH_LONG).show();
-			}
-		});
-		
-		
-		cb.setChecked(list.get(groupPosition).getTasksList().get(childPosition).isChecked());
-		cb.setOnCheckedChangeListener(new MyOnCheckedChangeListener(mContext, list.get(groupPosition).getTasksList().get(childPosition)));
-		
-		return linear;
+		return new Child(mContext, list.get(groupPosition).getTasksList().get(childPosition)).create();
 	}
 
 	@Override
@@ -137,6 +114,11 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
 		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP,30);
 		tv.setPadding(60, 0, 0, 0);
 			
+		/*tv.setLongClickable(true);
+		tv.setClickable(true);
+		
+		tv.setOnCreateContextMenuListener((Activity)mContext);*/
+		
 		return tv;
 	}
 
