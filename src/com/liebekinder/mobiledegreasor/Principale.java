@@ -142,7 +142,7 @@ public class Principale extends Activity {
 			}
 		});
 
-		list.setOnItemLongClickListener(new OnItemLongClickListener() {
+		/*list.setOnItemLongClickListener(new OnItemLongClickListener() {
 
 			@Override
 			public boolean onItemLongClick(AdapterView<?> adapterView,
@@ -151,7 +151,7 @@ public class Principale extends Activity {
 				return true;
 			}
 
-		});
+		});*/
 
 		for (int i = 0; i < categoryManager.getCategoriesList().size(); i++) {
 			if (categoryManager.getCategoriesList().get(i).isUnwrapped())
