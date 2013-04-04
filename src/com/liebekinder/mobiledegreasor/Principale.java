@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.liebekinder.mobiledegreasor.core.Category;
 import com.liebekinder.mobiledegreasor.core.CategoryManager;
+import com.liebekinder.mobiledegreasor.core.Child;
 import com.liebekinder.mobiledegreasor.core.Task;
 
 public class Principale extends Activity {
@@ -72,10 +73,10 @@ public class Principale extends Activity {
 		categoryManager2.addCategory(chasse);
 		categoryManager2.addCategory(chasse2);
 
-		//TODO si bug : incompatibilité des données.
-		//categoryManager=categoryManager2;
-		//saveState();
-		
+		// TODO si bug : incompatibilité des données.
+		// categoryManager=categoryManager2;
+		// saveState();
+
 		restoreState();
 
 		// TEST : si pas demodèle, en mettre un //
@@ -85,7 +86,7 @@ public class Principale extends Activity {
 		// FIN TEST//
 
 		list = new ExpandableListView(this);
-		//list.setGroupIndicator(null);
+		// list.setGroupIndicator(null);
 		list.setChildIndicator(null);
 		adapter = new MyExpandableListAdapter(this,
 				(ArrayList<Category>) categoryManager.getCategoriesList());
@@ -107,7 +108,6 @@ public class Principale extends Activity {
 
 		});
 
-
 		list.setOnGroupCollapseListener(new OnGroupCollapseListener() {
 
 			@Override
@@ -128,16 +128,15 @@ public class Principale extends Activity {
 			}
 		});
 
-		/*list.setOnItemLongClickListener(new OnItemLongClickListener() {
-
-			@Override
-			public boolean onItemLongClick(AdapterView<?> adapterView,
-					View view, int position, long id) {
-				Toast.makeText(context, "Long clic", Toast.LENGTH_LONG).show();
-				return true;
-			}
-
-		});*/
+		/*
+		 * list.setOnItemLongClickListener(new OnItemLongClickListener() {
+		 * 
+		 * @Override public boolean onItemLongClick(AdapterView<?> adapterView,
+		 * View view, int position, long id) { Toast.makeText(context,
+		 * "Long clic", Toast.LENGTH_LONG).show(); return true; }
+		 * 
+		 * });
+		 */
 
 		for (int i = 0; i < categoryManager.getCategoriesList().size(); i++) {
 			if (categoryManager.getCategoriesList().get(i).isUnwrapped())
@@ -145,33 +144,58 @@ public class Principale extends Activity {
 		}
 
 		registerForContextMenu(list);
-		
-		
+
 		setContentView(list);
 	}
-	
+
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
-	    ContextMenuInfo menuInfo) {
-	    menu.setHeaderTitle("osef");
-	    menu.add(Menu.NONE, 0, 0, "Test");
-	    
-	    
-	    /*try {
-	        info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-	    } catch (ClassCastException e) {
-	        Log.e("error", "bad menuInfo", e);
-	        return;
-	    }
-	    
-	    String selectedTask = ((Child) info.targetView).getTask().getName();
-	    menu.add(Menu.NONE, 1, 1, selectedTask);*/
-	 }
-	
+			ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+
+		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
+
+		menu.setHeaderTitle("osef");
+		int type = ExpandableListView
+				.getPackedPositionType(info.packedPosition);
+
+		int group = ExpandableListView
+				.getPackedPositionGroup(info.packedPosition);
+
+		int child = ExpandableListView
+				.getPackedPositionChild(info.packedPosition);
+
+		// Only create a context menu for child items
+		if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+			// Array created earlier when we built the expandable list
+			String page = categoryManager.getCategoriesList().get(group)
+					.getTasksList().get(child).getName();
+
+			menu.setHeaderTitle(page);
+		}
+		else if(type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+			// Array created earlier when we built the expandable list
+			String page = categoryManager.getCategoriesList().get(group)
+					.getName();
+
+			menu.setHeaderTitle(page);
+		}
+
+		menu.add(Menu.NONE, 0, 0, "Test");
+
+		/*
+		 * try { info = (AdapterView.AdapterContextMenuInfo) menuInfo; } catch
+		 * (ClassCastException e) { Log.e("error", "bad menuInfo", e); return; }
+		 */
+
+		// String selectedTask = ((Child) info.targetView).getTask().getName();
+		// menu.add(Menu.NONE, 1, 1, selectedTask);
+	}
+
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-	  Log.i("sdds",item.toString());
-	  return true;
+		Log.i("sdds", item.toString());
+		return true;
 	}
 
 	public void saveState() {
@@ -261,8 +285,5 @@ public class Principale extends Activity {
 
 		return false;
 	}
-
-
-
 
 }

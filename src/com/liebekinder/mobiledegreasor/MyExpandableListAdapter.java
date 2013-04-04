@@ -114,10 +114,13 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
 		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP,30);
 		tv.setPadding(60, 0, 0, 0);
 			
-		/*tv.setLongClickable(true);
-		tv.setClickable(true);
-		
-		tv.setOnCreateContextMenuListener((Activity)mContext);*/
+		//tv.setLongClickable(true);
+		//tv.setClickable(true);
+		//tv.setFocusable(true);
+		//tv.setFocusableInTouchMode(true);
+		//tv.setEnabled(true);
+
+		//tv.setOnCreateContextMenuListener((Activity)mContext);
 		
 		return tv;
 	}
