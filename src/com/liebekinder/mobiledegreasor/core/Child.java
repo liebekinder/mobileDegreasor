@@ -1,22 +1,14 @@
 package com.liebekinder.mobiledegreasor.core;
 
-import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.util.TypedValue;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Gravity;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnCreateContextMenuListener;
-import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-public class Child extends View implements OnCreateContextMenuListener{
+public class Child extends View{
 
 	private Task task;
 	private Context mContext;
@@ -26,6 +18,12 @@ public class Child extends View implements OnCreateContextMenuListener{
 		this.mContext = mContext;
 		this.task = task;
 	}
+	
+	public Child(Context mContext) {
+		super(mContext);
+		this.mContext = mContext;
+		
+	}
 
 	public View create() {
 		LinearLayout linear = new LinearLayout(mContext);
@@ -34,9 +32,12 @@ public class Child extends View implements OnCreateContextMenuListener{
 		TextView tv = new TextView(mContext);
 		tv.setText(task.getName());
 		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP,20);
+		tv.setPadding(10, 0, 0, 0);
 		
 		final CheckBox cb = new CheckBox(mContext);
 		cb.setChecked(task.isChecked());
+		linear.setPadding(20, 0, 0, 0);
+		linear.setGravity(Gravity.CENTER_VERTICAL);
 		
 
 		linear.addView(cb);
@@ -52,7 +53,7 @@ public class Child extends View implements OnCreateContextMenuListener{
 			@Override
 			public void onClick(View arg0) {
 				cb.setChecked(!cb.isChecked());
-				Toast.makeText(mContext, "Child !", Toast.LENGTH_LONG).show();
+				//Toast.makeText(mContext, "Child !", Toast.LENGTH_LONG).show();
 			}
 		});
 		
@@ -63,25 +64,6 @@ public class Child extends View implements OnCreateContextMenuListener{
 		
 		return linear;
 	}
-
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-	    ContextMenuInfo menuInfo) {
-	    menu.setHeaderTitle("osef");
-	    //menu.add(Menu.NONE, 0, 0, "Enfant");
-	    
-	    AdapterView.AdapterContextMenuInfo info ;
-	    try {
-	        info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-	    } catch (ClassCastException e) {
-	        Log.e("error", "bad menuInfo", e);
-	        return;
-	    }
-	    
-	    String selectedTask = ((Child) info.targetView).getTask().getName();
-	    menu.add(Menu.NONE, 0, 0, "qsfdghg");
-
-	 }
 
 	public Task getTask() {
 		return task;

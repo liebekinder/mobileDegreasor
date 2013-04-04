@@ -2,29 +2,15 @@ package com.liebekinder.mobiledegreasor;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.util.TypedValue;
-import android.view.ContextMenu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.View.OnClickListener;
-import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.ExpandableListView;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.liebekinder.mobiledegreasor.core.Category;
 import com.liebekinder.mobiledegreasor.core.Child;
-import com.liebekinder.mobiledegreasor.core.MyOnCheckedChangeListener;
 import com.liebekinder.mobiledegreasor.core.Task;
 
 public class MyExpandableListAdapter extends BaseExpandableListAdapter {
@@ -47,17 +33,6 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
 	public long getChildId(int groupPosition, int childPosition) {
 		return 0;
 	}
-
-	/*@Override
-	public View getChildView(int groupPosition, int childPosition,
-			boolean isLastChild, View convertView, ViewGroup parent) {
-		TextView row = (TextView) convertView;
-		if (row == null) {
-			row = new TextView(mContext);
-		}
-		row.setText(mContents[groupPosition][childPosition]);
-		return row;
-	}*/
 	
 	@Override
 	public View getChildView(int groupPosition, int childPosition,
@@ -89,21 +64,8 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
 	
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
 		return list.isEmpty();
 	}
-
-	/*@Override
-	public View getGroupView(int groupPosition, boolean isExpanded,
-			View convertView, ViewGroup parent) {
-		TextView row = (TextView) convertView;
-		if (row == null) {
-			row = new TextView(mContext);
-		}
-		row.setTypeface(Typeface.DEFAULT_BOLD);
-		row.setText(mTitles[groupPosition]);
-		return row;
-	}*/
 	
 	@Override
 	public View getGroupView(int groupPosition, boolean isExpanded,
@@ -113,18 +75,56 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
 		tv.setText(((Category)getGroup(groupPosition)).getName());
 		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP,30);
 		tv.setPadding(60, 0, 0, 0);
-			
-		//tv.setLongClickable(true);
-		//tv.setClickable(true);
-		//tv.setFocusable(true);
-		//tv.setFocusableInTouchMode(true);
-		//tv.setEnabled(true);
-
-		//tv.setOnCreateContextMenuListener((Activity)mContext);
+		tv.getHeight();
+		
+		int nb = getChildrenCount(groupPosition);
+		int sum = 0;
+		for(Task task: list.get(groupPosition).getTasksList()){
+			sum += task.isChecked()?1:0;
+		}
+		sum = nb==0?0:(10*sum)/nb;
+		switch(sum){
+		//0 - 10
+		case 0:
+			tv.setBackgroundResource(0);
+			break;
+		case 1:
+			tv.setBackgroundResource(R.drawable.i10);
+			break;
+		case 2:
+			tv.setBackgroundResource(R.drawable.i20);
+			break;
+		case 3:
+			tv.setBackgroundResource(R.drawable.i30);
+			break;
+		case 4:
+			tv.setBackgroundResource(R.drawable.i40);
+			break;
+		case 5:
+			tv.setBackgroundResource(R.drawable.i50);
+			break;
+		case 6:
+			tv.setBackgroundResource(R.drawable.i60);
+			break;
+		case 7:
+			tv.setBackgroundResource(R.drawable.i70);
+			break;
+		case 8:
+			tv.setBackgroundResource(R.drawable.i80);
+			break;
+		case 9:
+			tv.setBackgroundResource(R.drawable.i90);
+			break;
+		case 10:
+			tv.setBackgroundResource(R.drawable.i100);
+			break;
+		default:
+			tv.setBackgroundResource(0);
+		}
 		
 		return tv;
 	}
-
+	
 	@Override
 	public boolean hasStableIds() {
 		return false;

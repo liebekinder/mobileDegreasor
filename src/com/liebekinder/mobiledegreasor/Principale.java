@@ -15,9 +15,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ExpandableListView;
-import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ExpandableListView.OnGroupCollapseListener;
 import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.LinearLayout;
@@ -26,7 +24,6 @@ import android.widget.Toast;
 
 import com.liebekinder.mobiledegreasor.core.Category;
 import com.liebekinder.mobiledegreasor.core.CategoryManager;
-import com.liebekinder.mobiledegreasor.core.Child;
 import com.liebekinder.mobiledegreasor.core.Task;
 
 public class Principale extends Activity {
@@ -48,65 +45,14 @@ public class Principale extends Activity {
 
 		this.context = this;
 
-		// //////////////////////////////////////////////////////////////////////////////////
-		// ////////////////////////////Hard coded
-		// example////////////////////////////////////
-		// //////////////////////////////////////////////////////////////////////////////////
-		CategoryManager categoryManager2 = new CategoryManager(this);
-
-		Category voiture = new Category("Voiture", categoryManager2);
-
-		voiture.addTask(new Task("Faire vidange", voiture));
-		voiture.addTask(new Task("Ecraser mémé", voiture));
-		voiture.addTask(new Task("Aller à l'enterrement de mémé", voiture));
-
-		Category chasse = new Category("Chasse", categoryManager2);
-		chasse.addTask(new Task("Chasser gibier", chasse));
-		chasse.addTask(new Task("Vider gibier", chasse));
-		chasse.addTask(new Task("Manger enfant", chasse));
-		Category chasse2 = new Category("Chasse2", categoryManager2);
-		chasse2.addTask(new Task("Chassers gibier", chasse2));
-		chasse2.addTask(new Task("Viders gibier", chasse2));
-		chasse2.addTask(new Task("Mangers enfant", chasse2));
-
-		categoryManager2.addCategory(voiture);
-		categoryManager2.addCategory(chasse);
-		categoryManager2.addCategory(chasse2);
-
-		// TODO si bug : incompatibilité des données.
-		// categoryManager=categoryManager2;
-		// saveState();
-
 		restoreState();
 
-		// TEST : si pas demodèle, en mettre un //
-		if (categoryManager.getCategoriesList().isEmpty())
-			categoryManager = categoryManager2;
-		Log.i("test2", categoryManager.getCategoriesList().get(0).getName());
-		// FIN TEST//
-
 		list = new ExpandableListView(this);
-		// list.setGroupIndicator(null);
 		list.setChildIndicator(null);
 		adapter = new MyExpandableListAdapter(this,
 				(ArrayList<Category>) categoryManager.getCategoriesList());
 		list.setAdapter(adapter);
 
-		list.setOnGroupClickListener(new OnGroupClickListener() {
-
-			@Override
-			public boolean onGroupClick(ExpandableListView arg0, View arg1,
-					int groupPosition, long arg3) {
-				Toast.makeText(
-						context,
-						"Clik on : "
-								+ categoryManager.getCategoriesList()
-										.get(groupPosition).getName(),
-						Toast.LENGTH_LONG).show();
-				return false;
-			}
-
-		});
 
 		list.setOnGroupCollapseListener(new OnGroupCollapseListener() {
 
@@ -125,18 +71,8 @@ public class Principale extends Activity {
 				categoryManager.getCategoriesList().get(groupPosition)
 						.setUnwrapped(true);
 				saveState();
-			}
+			}			
 		});
-
-		/*
-		 * list.setOnItemLongClickListener(new OnItemLongClickListener() {
-		 * 
-		 * @Override public boolean onItemLongClick(AdapterView<?> adapterView,
-		 * View view, int position, long id) { Toast.makeText(context,
-		 * "Long clic", Toast.LENGTH_LONG).show(); return true; }
-		 * 
-		 * });
-		 */
 
 		for (int i = 0; i < categoryManager.getCategoriesList().size(); i++) {
 			if (categoryManager.getCategoriesList().get(i).isUnwrapped())
@@ -183,6 +119,7 @@ public class Principale extends Activity {
 		}
 		
 		menu.add(Menu.NONE, 1, 1, "Delete");
+		menu.add(Menu.NONE, 2, 2, "Cancel");
 	}
 
 	@Override
@@ -194,7 +131,7 @@ public class Principale extends Activity {
 		int type = ExpandableListView
 				.getPackedPositionType(info.packedPosition);
 
-		int group = ExpandableListView
+		final int group = ExpandableListView
 				.getPackedPositionGroup(info.packedPosition);
 
 		int child = ExpandableListView
@@ -210,6 +147,7 @@ public class Principale extends Activity {
 			if(item.getItemId()==1) {
 				Log.i("Suppr","delete");
 				cat.deleteTask(task.getUuid());
+				saveState();
 				adapter.notifyDataSetChanged();
 			}
 
@@ -242,7 +180,9 @@ public class Principale extends Activity {
 									+ "\" successfully created !";
 							cat.addTask(new Task(name,cat));
 							saveState();
+							list.expandGroup(group);
 							adapter.notifyDataSetChanged();
+							
 						}
 						Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 					}
@@ -261,6 +201,7 @@ public class Principale extends Activity {
 				Log.i("Suppr","Delete");
 				categoryManager.deleteCategory(page);
 				adapter.notifyDataSetChanged();
+				saveState();
 			}
 		}
 		
@@ -275,6 +216,7 @@ public class Principale extends Activity {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
+		adapter.notifyDataSetChanged();
 		editor.commit();
 	}
 
@@ -309,49 +251,62 @@ public class Principale extends Activity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		CharSequence lal = item.getTitle();
+		int lal = item.getNumericShortcut();
 		Log.i("her", "clic method action: " + lal);
-
-		AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
-		alert.setTitle("Create a new category");
-		alert.setMessage("Enter your category name : ");
-
-		// Set an EditText view to get user input
-		final MyTextEdit input = new MyTextEdit(this);
-		alert.setView(input);
-
-		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int whichButton) {
-				Editable value = input.getText();
-				String name = value.toString().replace("\n", "").trim();
-				String message;
-				if (name.equals("")) {
-					message = "Category name cannot be null !";
-				} else {
-					message = "Category \"" + name
-							+ "\" successfully created !";
-					if (!categoryManager.addCategory(new Category(name,
-							categoryManager)))
-						message = "Category \"" + name + "\" already exists !";
-					else {
-						saveState();
-						adapter.notifyDataSetChanged();
-					}
-				}
-				Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-			}
-		});
-
-		alert.setNegativeButton("Cancel",
-				new DialogInterface.OnClickListener() {
+		switch(lal){		
+			case 49:
+				AlertDialog.Builder alert = new AlertDialog.Builder(this);
+	
+				alert.setTitle("Create a new category");
+				alert.setMessage("Enter your category name : ");
+	
+				// Set an EditText view to get user input
+				final MyTextEdit input = new MyTextEdit(this);
+				alert.setView(input);
+	
+				alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
-						// Canceled.
+						Editable value = input.getText();
+						String name = value.toString().replace("\n", "").trim();
+						String message;
+						if (name.equals("")) {
+							message = "Category name cannot be null !";
+						} else {
+							message = "Category \"" + name
+									+ "\" successfully created !";
+							if (!categoryManager.addCategory(new Category(name,
+									categoryManager)))
+								message = "Category \"" + name + "\" already exists !";
+							else {
+								saveState();
+								adapter.notifyDataSetChanged();
+							}
+						}
+						Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 					}
 				});
-
-		alert.show();
-
+	
+				alert.setNegativeButton("Cancel",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int whichButton) {
+								// Canceled.
+							}
+						});
+	
+				alert.show();
+				break;
+			case 50:
+				for (int i = 0; i < categoryManager.getCategoriesList().size(); i++) {
+					if (categoryManager.getCategoriesList().get(i).isUnwrapped()){
+						categoryManager.getCategoriesList().get(i).setUnwrapped(false);
+						list.collapseGroup(i);						
+					}
+				}
+				break;
+			default:
+				Log.i("err", "le numérique shortcut ne sert à rien...");
+				break;
+		}
 		return false;
 	}
 

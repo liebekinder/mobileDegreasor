@@ -4,16 +4,13 @@
         android:id="@+id/action_add_category"
         android:orderInCategory="33"
         android:title="@string/action_add_category"
-        android:icon="@drawable/ic_launcher"/>
+        android:icon="@drawable/ic_launcher"
+    	android:numericShortcut="1"/>
     <item
         android:id="@+id/action_reploy"
         android:orderInCategory="33"
         android:title="@string/action_reploy"
-        android:icon="@drawable/ic_launcher"/>
-    <item
-        android:id="@+id/action_about"
-        android:orderInCategory="33"
-        android:title="@string/action_about"
-        android:icon="@drawable/ic_launcher"/>
+        android:icon="@drawable/ic_launcher"
+    	android:numericShortcut="2"/>
 
 </menu>

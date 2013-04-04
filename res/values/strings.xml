@@ -2,15 +2,15 @@
 <resources>
 
     <string name="app_name">MobileDegreasor</string>
-    <string name="action_about">A propos</string>
-    <string name="action_add_category">Nouvelle catégorie</string>
-    <string name="action_reploy">Replier les listes</string>
-    <string name="action_aboutC">A propos</string>
-    <string name="action_add_categoryC">Nouv. cat.</string>
-    <string name="action_reployC">list. up</string>
+    <string name="action_about">About</string>
+    <string name="action_add_category">New category</string>
+    <string name="action_reploy">Collapse list</string>
+    <string name="action_aboutC">About</string>
+    <string name="action_add_categoryC">New cat.</string>
+    <string name="action_reployC">List up</string>
     <string name="hello_world">Hello world!</string>
-    <string name="dialog_Cat">Donnez le nom de la catégorie</string>
-    <string name="ok">Ok</string>
-    <string name="cancel">Annuler</string>
+    <string name="dialog_Cat">Please enter the category\'s name</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 
 </resources>
