@@ -155,7 +155,7 @@ public class Principale extends Activity {
 
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
 
-		menu.setHeaderTitle("osef");
+		menu.setHeaderTitle("Default");
 		int type = ExpandableListView
 				.getPackedPositionType(info.packedPosition);
 
@@ -179,22 +179,91 @@ public class Principale extends Activity {
 					.getName();
 
 			menu.setHeaderTitle(page);
+			menu.add(Menu.NONE, 0, 0, "Add a task...");
 		}
-
-		menu.add(Menu.NONE, 0, 0, "Test");
-
-		/*
-		 * try { info = (AdapterView.AdapterContextMenuInfo) menuInfo; } catch
-		 * (ClassCastException e) { Log.e("error", "bad menuInfo", e); return; }
-		 */
-
-		// String selectedTask = ((Child) info.targetView).getTask().getName();
-		// menu.add(Menu.NONE, 1, 1, selectedTask);
+		
+		menu.add(Menu.NONE, 1, 1, "Delete");
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		Log.i("sdds", item.toString());
+		super.onContextItemSelected(item);
+		
+		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) item.getMenuInfo();
+
+		int type = ExpandableListView
+				.getPackedPositionType(info.packedPosition);
+
+		int group = ExpandableListView
+				.getPackedPositionGroup(info.packedPosition);
+
+		int child = ExpandableListView
+				.getPackedPositionChild(info.packedPosition);
+
+		// Only create a context menu for child items
+		if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+			// Array created earlier when we built the expandable list
+			Category cat = categoryManager.getCategoriesList().get(group);
+			Task task = cat.getTasksList().get(child);
+			String page = task.getName();
+			Log.i("page",page);
+			if(item.getItemId()==1) {
+				Log.i("Suppr","delete");
+				cat.deleteTask(task.getUuid());
+				adapter.notifyDataSetChanged();
+			}
+
+		}
+		else if(type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+			// Array created earlier when we built the expandable list
+			final Category cat = categoryManager.getCategoriesList().get(group);
+			String page = cat.getName();
+			Log.i("page",page);
+			if(item.getItemId()==0) {
+				Log.i("Add","add");
+				AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+				alert.setTitle("Create a new task");
+				alert.setMessage("Enter your task name : ");
+
+				// Set an EditText view to get user input
+				final MyTextEdit input = new MyTextEdit(this);
+				alert.setView(input);
+
+				alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						Editable value = input.getText();
+						String name = value.toString().replace("\n", "").trim();
+						String message;
+						if (name.equals("")) {
+							message = "Task name cannot be null !";
+						} else {
+							message = "Task \"" + name
+									+ "\" successfully created !";
+							cat.addTask(new Task(name,cat));
+							saveState();
+							adapter.notifyDataSetChanged();
+						}
+						Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+					}
+				});
+
+				alert.setNegativeButton("Cancel",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int whichButton) {
+								// Canceled.
+							}
+						});
+
+				alert.show();
+			} 
+			else if(item.getItemId()==1) {
+				Log.i("Suppr","Delete");
+				categoryManager.deleteCategory(page);
+				adapter.notifyDataSetChanged();
+			}
+		}
+		
 		return true;
 	}
 
@@ -249,7 +318,7 @@ public class Principale extends Activity {
 		alert.setMessage("Enter your category name : ");
 
 		// Set an EditText view to get user input
-		final EditText input = new EditText(this);
+		final MyTextEdit input = new MyTextEdit(this);
 		alert.setView(input);
 
 		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
