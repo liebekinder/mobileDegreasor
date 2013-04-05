@@ -204,7 +204,7 @@ public class Principale extends Activity {
 				saveState();
 			}
 		}
-		
+
 		return true;
 	}
 
