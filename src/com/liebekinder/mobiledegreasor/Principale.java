@@ -82,6 +82,21 @@ public class Principale extends Activity {
 		registerForContextMenu(list);
 
 		setContentView(list);
+		
+		if(categoryManager.getCategoriesList().size() == 0){
+			//we should open a context menu that tells that the user should add a category
+			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+			alert.setTitle("Create a new category");
+			alert.setMessage("It seems that you haven't created any category yet! To do so, push the menu button and click on 'New category': ");
+
+			alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					//nothing
+				}
+			});
+			alert.show();
+		}
 	}
 
 	@Override
