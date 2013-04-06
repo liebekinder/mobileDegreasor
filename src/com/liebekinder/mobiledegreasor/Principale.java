@@ -243,17 +243,13 @@ public class Principale extends Activity {
 		String s = null;
 		try {
 			s = shared.getString("main", null);
+			if (s != null){
+				categoryManager.deserialize(s);
+			}
+			else categoryManager = new CategoryManager(this);
 		} catch (Throwable e) {
-			//Log.v("shared", "le fichier de pref n'existe pas");
-			e.printStackTrace();
+			categoryManager = new CategoryManager(this);
 		}
-		//Log.v("shared", "manager");
-		categoryManager = new CategoryManager(this);
-		//Log.v("shared", "manager ok");
-		if (s != null)
-			//Log.v("shared", "deserialize");
-			categoryManager.deserialize(s);
-			//Log.v("shared", "deserialize ok!");
 	}
 
 	public LinearLayout affiche() {
