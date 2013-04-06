@@ -219,7 +219,7 @@ public class Principale extends Activity {
 				saveState();
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -317,6 +317,7 @@ public class Principale extends Activity {
 						list.collapseGroup(i);						
 					}
 				}
+				saveState();
 				break;
 			default:
 				Log.i("err", "le numérique shortcut ne sert à rien...");
