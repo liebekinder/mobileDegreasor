@@ -47,6 +47,10 @@ public class Principale extends Activity {
 
 		restoreState();
 
+//		if(categoryManager == null){
+//			Log.i("info","cat manager is null");
+//		}
+		
 		list = new ExpandableListView(this);
 		list.setChildIndicator(null);
 		adapter = new MyExpandableListAdapter(this,
@@ -240,11 +244,16 @@ public class Principale extends Activity {
 		try {
 			s = shared.getString("main", null);
 		} catch (Throwable e) {
+			//Log.v("shared", "le fichier de pref n'existe pas");
 			e.printStackTrace();
 		}
+		//Log.v("shared", "manager");
 		categoryManager = new CategoryManager(this);
+		//Log.v("shared", "manager ok");
 		if (s != null)
+			//Log.v("shared", "deserialize");
 			categoryManager.deserialize(s);
+			//Log.v("shared", "deserialize ok!");
 	}
 
 	public LinearLayout affiche() {

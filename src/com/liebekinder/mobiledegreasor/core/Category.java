@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import android.content.Context;
+import android.util.Log;
 
 /**
  * A category. Must be unique by it's name.
@@ -96,15 +97,18 @@ public class Category{
 	}
 	
 	public void deserialize(String s) {
-		String[] catS = s.split("\n\n");
-		String[] catSSplit = catS[0].split("\n");
-		name = catSSplit[0];
-		unwrapped = Boolean.valueOf(catSSplit[1]);
-		for(int i =1; i< catS.length;i++){
-			Task task = new Task("",this);
-			task.deserialize(catS[i]);
-			addTask(task);
+//		if(s != null){
+//			Log.v("string s", s);
+			String[] catS = s.split("\n\n");
+			String[] catSSplit = catS[0].split("\n");
+			name = catSSplit[0];
+			unwrapped = Boolean.valueOf(catSSplit[1]);
+			for(int i =1; i< catS.length;i++){
+				Task task = new Task("",this);
+				task.deserialize(catS[i]);
+				addTask(task);
+			}
 		}
-	}
+//	}
 	
 }
