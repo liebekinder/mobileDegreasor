@@ -46,10 +46,6 @@ public class Principale extends Activity {
 		this.context = this;
 
 		restoreState();
-
-//		if(categoryManager == null){
-//			Log.i("info","cat manager is null");
-//		}
 		
 		list = new ExpandableListView(this);
 		list.setChildIndicator(null);
@@ -243,13 +239,12 @@ public class Principale extends Activity {
 		String s = null;
 		try {
 			s = shared.getString("main", null);
-			if (s != null){
-				categoryManager.deserialize(s);
-			}
-			else categoryManager = new CategoryManager(this);
 		} catch (Throwable e) {
-			categoryManager = new CategoryManager(this);
+			e.printStackTrace();
 		}
+		categoryManager = new CategoryManager(this);
+		if (s != null)
+			categoryManager.deserialize(s);
 	}
 
 	public LinearLayout affiche() {
