@@ -1,10 +1,10 @@
 package com.liebekinder.mobiledegreasor.core;
 
-import com.liebekinder.mobiledegreasor.Principale;
-
 import android.content.Context;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+
+import com.liebekinder.mobiledegreasor.Principale;
 
 public class MyOnCheckedChangeListener implements OnCheckedChangeListener{
 
@@ -16,9 +16,10 @@ public class MyOnCheckedChangeListener implements OnCheckedChangeListener{
 		this.mContext = mContext;
 	}
 	
+	
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		task.setChecked(isChecked);
-		((Principale) mContext).saveState();
+		((Principale) mContext).getAdapter().notifyDataSetChanged();
 	}
 }

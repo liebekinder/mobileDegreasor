@@ -18,8 +18,6 @@ import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnGroupCollapseListener;
 import android.widget.ExpandableListView.OnGroupExpandListener;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.Toast;
 
 import com.liebekinder.mobiledegreasor.core.Category;
@@ -32,8 +30,7 @@ public class Principale extends Activity {
 	 * The global category manager. Restore it.
 	 */
 	private CategoryManager categoryManager;
-	private ListAdapter listadapter;
-	private SharedPreferences shared = null;
+	private SharedPreferences shared;
 	private Principale context;
 	private MyExpandableListAdapter adapter;
 	private ExpandableListView list;
@@ -45,44 +42,25 @@ public class Principale extends Activity {
 
 		this.context = this;
 
-		restoreState();
 		
 		list = new ExpandableListView(this);
+		restoreState();
 		list.setChildIndicator(null);
-		adapter = new MyExpandableListAdapter(this,
-				(ArrayList<Category>) categoryManager.getCategoriesList());
-		list.setAdapter(adapter);
+		
+//		adapter = new MyExpandableListAdapter(this,
+//				(ArrayList<Category>) categoryManager.getCategoriesList());
+//		list.setAdapter(adapter);
+		
 
 
-		list.setOnGroupCollapseListener(new OnGroupCollapseListener() {
 
-			@Override
-			public void onGroupCollapse(int groupPosition) {
-				categoryManager.getCategoriesList().get(groupPosition)
-						.setUnwrapped(false);
-				saveState();
-			}
-		});
-
-		list.setOnGroupExpandListener(new OnGroupExpandListener() {
-
-			@Override
-			public void onGroupExpand(int groupPosition) {
-				categoryManager.getCategoriesList().get(groupPosition)
-						.setUnwrapped(true);
-				saveState();
-			}			
-		});
-
-		for (int i = 0; i < categoryManager.getCategoriesList().size(); i++) {
-			if (categoryManager.getCategoriesList().get(i).isUnwrapped())
-				list.expandGroup(i);
-		}
 
 		registerForContextMenu(list);
 
 		//In case of corrupted data.
 		saveState();
+		adapter.notifyDataSetChanged();
+		
 		
 		setContentView(list);
 		
@@ -102,6 +80,16 @@ public class Principale extends Activity {
 		}
 	}
 
+	public void onPause(){
+		super.onPause();
+		saveState();
+	}
+	
+	public void onResume(){
+		super.onResume();
+		restoreState();
+	}
+	
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
@@ -165,7 +153,7 @@ public class Principale extends Activity {
 			if(item.getItemId()==1) {
 				Log.i("Suppr","delete");
 				cat.deleteTask(task.getUuid());
-				saveState();
+				//saveState();adapter.notifyDataSetChanged();
 				adapter.notifyDataSetChanged();
 			}
 
@@ -197,7 +185,7 @@ public class Principale extends Activity {
 							message = "Task \"" + name
 									+ "\" successfully created !";
 							cat.addTask(new Task(name,cat));
-							saveState();
+							//saveState();adapter.notifyDataSetChanged();
 							list.expandGroup(group);
 							adapter.notifyDataSetChanged();
 							
@@ -219,7 +207,7 @@ public class Principale extends Activity {
 				Log.i("Suppr","Delete");
 				categoryManager.deleteCategory(page);
 				adapter.notifyDataSetChanged();
-				saveState();
+				//saveState();adapter.notifyDataSetChanged();
 			}
 		}
 
@@ -230,12 +218,17 @@ public class Principale extends Activity {
 		SharedPreferences.Editor editor = null;
 		editor = shared.edit();
 		try {
-			editor.putString("main", categoryManager.serialize());
+			String s = categoryManager.serialize();
+			editor.putString("main", s);
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 		adapter.notifyDataSetChanged();
 		editor.commit();
+	}
+
+	public CategoryManager getCategoryManager() {
+		return categoryManager;
 	}
 
 	public void restoreState() {
@@ -259,16 +252,35 @@ public class Principale extends Activity {
 				categoryManager = new CategoryManager(this);
 			}
 		}
-	}
+		//Log.i("s",s);adapter = new MyExpandableListAdapter(this,
+		adapter = new MyExpandableListAdapter(this,
+				(ArrayList<Category>) categoryManager.getCategoriesList());
+		list.setAdapter(adapter);		list.setOnGroupCollapseListener(new OnGroupCollapseListener() {
 
-	public LinearLayout affiche() {
-		LinearLayout global = new LinearLayout(this);
+			@Override
+			public void onGroupCollapse(int groupPosition) {
+				categoryManager.getCategoriesList().get(groupPosition)
+						.setUnwrapped(false);
+				//saveState();
+				adapter.notifyDataSetChanged();
+			}
+		});
 
-		ExpandableListView lv = new ExpandableListView(this);
-		lv.setAdapter(listadapter);
-		global.addView(lv);
+		list.setOnGroupExpandListener(new OnGroupExpandListener() {
 
-		return global;
+			@Override
+			public void onGroupExpand(int groupPosition) {
+				categoryManager.getCategoriesList().get(groupPosition)
+						.setUnwrapped(true);
+				//saveState();
+				adapter.notifyDataSetChanged();
+			}			
+		});
+
+		for (int i = 0; i < categoryManager.getCategoriesList().size(); i++) {
+			if (categoryManager.getCategoriesList().get(i).isUnwrapped())
+				list.expandGroup(i);
+		}
 	}
 
 	@Override
@@ -307,7 +319,7 @@ public class Principale extends Activity {
 									categoryManager)))
 								message = "Category \"" + name + "\" already exists !";
 							else {
-								saveState();
+								//saveState();adapter.notifyDataSetChanged();
 								adapter.notifyDataSetChanged();
 							}
 						}
@@ -331,13 +343,18 @@ public class Principale extends Activity {
 						list.collapseGroup(i);						
 					}
 				}
-				saveState();
+				//saveState();
+				adapter.notifyDataSetChanged();
 				break;
 			default:
 				Log.i("err", "le numérique shortcut ne sert à rien...");
 				break;
 		}
 		return false;
+	}
+
+	public MyExpandableListAdapter getAdapter() {
+		return adapter;
 	}
 
 }

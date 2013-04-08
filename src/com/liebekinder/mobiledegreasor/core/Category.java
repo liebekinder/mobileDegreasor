@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 
 import android.content.Context;
-import android.util.Log;
 
 /**
  * A category. Must be unique by it's name.
