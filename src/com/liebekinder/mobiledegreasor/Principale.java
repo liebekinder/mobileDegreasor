@@ -85,6 +85,9 @@ public class Principale extends Activity {
 
 		registerForContextMenu(list);
 
+		//In case of corrupted data.
+		saveState();
+		
 		setContentView(list);
 		
 		if(categoryManager.getCategoriesList().size() == 0){
@@ -92,7 +95,7 @@ public class Principale extends Activity {
 			AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
 			alert.setTitle("Create a new category");
-			alert.setMessage("It seems that you haven't created any category yet! To do so, push the menu button and click on 'New category': ");
+			alert.setMessage("It seems that you haven't created any category yet! To do so, push the menu button and click on 'New category'. ");
 
 			alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int whichButton) {
@@ -243,12 +246,21 @@ public class Principale extends Activity {
 		String s = null;
 		try {
 			s = shared.getString("main", null);
-			if (s != null){
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		finally {
+			categoryManager = new CategoryManager(this);
+		}
+		
+		if (s != null){
+			try {
 				categoryManager.deserialize(s);
 			}
-			else categoryManager = new CategoryManager(this);
-		} catch (Throwable e) {
-			categoryManager = new CategoryManager(this);
+			catch(Exception e) {
+				//In case of corrupted data, recreate them.
+				categoryManager = new CategoryManager(this);
+			}
 		}
 	}
 
